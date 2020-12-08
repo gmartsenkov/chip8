@@ -146,3 +146,16 @@ func TestExecOpSEVxVy(t *testing.T) {
 	err = vm.ExecOp(0x5431)
 	assert.Equal(t, err, &UnknownOpCode{OpCode: 0x5431})
 }
+
+// LD Vx, byte
+func TestExecOpLDVx(t *testing.T) {
+	vm := InitVM()
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x0))
+
+	err := vm.ExecOp(0x6235)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x35))
+}

@@ -123,6 +123,14 @@ func (vm *VM) ExecOp(op uint16) error {
 			return &UnknownOpCode{OpCode: op}
 		}
 		break
+	case 0x6000: // LD Vx, byte
+		x := op & 0xF00 >> 8
+		kk := uint8(op & 0x00FF)
+
+		vm.V[x] = kk
+
+		vm.PC += 2
+		break
 	}
 	return nil
 }
