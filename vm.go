@@ -47,3 +47,9 @@ func InitVM() VM {
 
 	return instance
 }
+
+func (vm *VM) LoadProgram(program []byte) {
+	for i, v := range program {
+		vm.Memory[i+512] = v
+	}
+}
