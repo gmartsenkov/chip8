@@ -71,9 +71,15 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.PC = vm.Stack[vm.SP]
 			vm.SP--
 			vm.PC += 2
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}
+
+		break
+	case 0x1000: // Jump address
+		vm.PC = op & 0x0FFF
+		break
 	}
 	return nil
 }

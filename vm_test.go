@@ -55,3 +55,15 @@ func TestExecOpInvalidSYS(t *testing.T) {
 	err := vm.ExecOp(0x00E1)
 	assert.Equal(t, err, &UnknownOpCode{OpCode: 0x00E1})
 }
+
+// JP address
+func TestExecOpJPAddr(t *testing.T) {
+	vm := InitVM()
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0x1234)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, vm.PC, uint16(0x234))
+}
