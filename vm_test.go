@@ -105,3 +105,21 @@ func TestExecOpSEVx(t *testing.T) {
 
 	assert.Equal(t, vm.PC, uint16(0x206))
 }
+
+// SNE Vx
+func TestExecOpSNEVx(t *testing.T) {
+	vm := InitVM()
+	vm.V[4] = 0xFF
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0x4456)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x204))
+
+	err = vm.ExecOp(0x44FF)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x206))
+}
