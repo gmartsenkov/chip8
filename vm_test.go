@@ -23,3 +23,35 @@ func TestLoadProgram(t *testing.T) {
 
 	assert.Equal(t, vm.Memory[512:519], []byte("program"))
 }
+
+// CLS
+func TestExecOpCLS(t *testing.T) {
+	vm := InitVM()
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0x00E0)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+}
+
+// RET
+func TestExecOpRET(t *testing.T) {
+	vm := InitVM()
+	vm.SP = 2
+	vm.Stack[2] = 0x300
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0x00EE)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, vm.PC, uint16(0x302))
+}
+
+// Invalid SYS address
+func TestExecOpInvalidSYS(t *testing.T) {
+	vm := InitVM()
+
+	err := vm.ExecOp(0x00E1)
+	assert.Equal(t, err, &UnknownOpCode{OpCode: 0x00E1})
+}

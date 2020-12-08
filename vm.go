@@ -1,5 +1,17 @@
 package main
 
+import (
+	"fmt"
+)
+
+type UnknownOpCode struct {
+	OpCode uint16
+}
+
+func (uo *UnknownOpCode) Error() string {
+	return "Unknown OpCode: " + fmt.Sprintf("%X", uo.OpCode)
+}
+
 type VM struct {
 	// The 4096 bytes of memory.
 	//
@@ -28,12 +40,12 @@ type VM struct {
 	// +---------------+= 0x000 (0) Start of Chip-8 RAM
 
 	Memory [4095]byte
-	V [16]uint8 // 16 Registers (V0 to VF)
-	Stack [16]uint16
+	V      [16]uint8 // 16 Registers (V0 to VF)
+	Stack  [16]uint16
 
 	PC uint16 // Program counter
-	SP uint8 // Stack pointer
-	I uint16 // Index register
+	SP uint8  // Stack pointer
+	I  uint16 // Index register
 }
 
 func InitVM() VM {
@@ -46,6 +58,24 @@ func InitVM() VM {
 	}
 
 	return instance
+}
+
+func (vm *VM) ExecOp(op uint16) error {
+	switch op & 0xF000 {
+	case 0x0000: // SYS addr
+		switch op {
+		case 0x00E0: // CLS
+			vm.PC += 2
+			break
+		case 0x00EE: // RET
+			vm.PC = vm.Stack[vm.SP]
+			vm.SP--
+			vm.PC += 2
+		default:
+			return &UnknownOpCode{OpCode: op}
+		}
+	}
+	return nil
 }
 
 func (vm *VM) LoadProgram(program []byte) {
