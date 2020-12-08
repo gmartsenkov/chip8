@@ -30,7 +30,7 @@ func TestExecOpCLS(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x200))
 
 	err := vm.ExecOp(0x00E0)
-	assert.Equal(t, err, nil)
+	assert.Nil(t, err)
 
 	assert.Equal(t, vm.PC, uint16(0x202))
 }
@@ -43,7 +43,7 @@ func TestExecOpRET(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x200))
 
 	err := vm.ExecOp(0x00EE)
-	assert.Equal(t, err, nil)
+	assert.Nil(t, err)
 
 	assert.Equal(t, vm.PC, uint16(0x302))
 }
@@ -63,7 +63,7 @@ func TestExecOpJPAddr(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x200))
 
 	err := vm.ExecOp(0x1234)
-	assert.Equal(t, err, nil)
+	assert.Nil(t, err)
 
 	assert.Equal(t, vm.PC, uint16(0x234))
 }
@@ -77,7 +77,7 @@ func TestExecOpCallAddr(t *testing.T) {
 	assert.Equal(t, vm.Stack, [16]uint16{})
 
 	err := vm.ExecOp(0x2234)
-	assert.Equal(t, err, nil)
+	assert.Nil(t, err)
 
 	assert.Equal(t, vm.PC, uint16(0x234))
 	assert.Equal(t, vm.SP, uint8(0x1))
@@ -96,12 +96,12 @@ func TestExecOpSEVx(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x200))
 
 	err := vm.ExecOp(0x3456)
-	assert.Equal(t, err, nil)
+	assert.Nil(t, err)
 
 	assert.Equal(t, vm.PC, uint16(0x202))
 
 	err = vm.ExecOp(0x34FF)
-	assert.Equal(t, err, nil)
+	assert.Nil(t, err)
 
 	assert.Equal(t, vm.PC, uint16(0x206))
 }
