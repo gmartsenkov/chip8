@@ -85,6 +85,17 @@ func (vm *VM) ExecOp(op uint16) error {
 		vm.Stack[vm.SP] = vm.PC
 		vm.PC = op & 0x0FFF
 		break
+	case 0x3000: // SE Vx - Skip next instruction if Vx = kk.
+		x := op & 0x0F00 >> 8
+		kk := uint8(op & 0x00FF)
+
+		vm.PC += 2
+
+		if vm.V[x] == kk {
+			vm.PC += 2
+		}
+
+		break
 	}
 	return nil
 }

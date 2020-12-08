@@ -87,3 +87,21 @@ func TestExecOpCallAddr(t *testing.T) {
 		[16]uint16{0x0, 0x200, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
 	)
 }
+
+// SE Vx
+func TestExecOpSEVx(t *testing.T) {
+	vm := InitVM()
+	vm.V[4] = 0xFF
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0x3456)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+
+	err = vm.ExecOp(0x34FF)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, vm.PC, uint16(0x206))
+}
