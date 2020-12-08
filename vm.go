@@ -80,6 +80,11 @@ func (vm *VM) ExecOp(op uint16) error {
 	case 0x1000: // Jump address
 		vm.PC = op & 0x0FFF
 		break
+	case 0x2000: // Call addr
+		vm.SP++
+		vm.Stack[vm.SP] = vm.PC
+		vm.PC = op & 0x0FFF
+		break
 	}
 	return nil
 }

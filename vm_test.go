@@ -17,7 +17,7 @@ func TestLoadProgram(t *testing.T) {
 	vm := InitVM()
 	program := []byte("program")
 
-	assert.Equal(t, vm.Memory[512:519], []byte{0,0,0,0,0,0,0})
+	assert.Equal(t, vm.Memory[512:519], []byte{0, 0, 0, 0, 0, 0, 0})
 
 	vm.LoadProgram(program)
 
@@ -66,4 +66,24 @@ func TestExecOpJPAddr(t *testing.T) {
 	assert.Equal(t, err, nil)
 
 	assert.Equal(t, vm.PC, uint16(0x234))
+}
+
+// CALL address
+func TestExecOpCallAddr(t *testing.T) {
+	vm := InitVM()
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.SP, uint8(0x0))
+	assert.Equal(t, vm.Stack, [16]uint16{})
+
+	err := vm.ExecOp(0x2234)
+	assert.Equal(t, err, nil)
+
+	assert.Equal(t, vm.PC, uint16(0x234))
+	assert.Equal(t, vm.SP, uint8(0x1))
+	assert.Equal(
+		t,
+		vm.Stack,
+		[16]uint16{0x0, 0x200, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0},
+	)
 }
