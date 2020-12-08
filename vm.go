@@ -107,6 +107,22 @@ func (vm *VM) ExecOp(op uint16) error {
 		}
 
 		break
+	case 0x5000: // 5xy0 - SE Vx, Vy
+		switch op & 0xF00F {
+		case 0x5000:
+			x := op & 0x0F00 >> 8
+			y := op & 0x00F0 >> 4
+
+			vm.PC += 2
+
+			if vm.V[x] == vm.V[y] {
+				vm.PC += 2
+			}
+			break
+		default:
+			return &UnknownOpCode{OpCode: op}
+		}
+		break
 	}
 	return nil
 }
