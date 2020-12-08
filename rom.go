@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/hex"
-	"fmt"
 	"io"
 )
 
@@ -16,12 +14,9 @@ func ReadROM(rom io.Reader, size int) []byte {
 
 		if err != nil {
 			if err == io.EOF {
-				fmt.Println(err)
 				break
 			}
 		}
-
-		fmt.Println("%s", hex.Dump(buffer))
 	}
 
 	return buffer
