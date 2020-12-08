@@ -1,14 +1,15 @@
 package main
 
 import (
-	"testing"
 	"bytes"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestReadROM(t *testing.T) {
 	buf := bytes.Buffer{}
-	buf.Write([]byte("test"))
+	buf.Write([]uint8("test"))
 
 	result := ReadROM(&buf, 4)
 
