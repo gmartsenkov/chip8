@@ -77,15 +77,15 @@ func (vm *VM) ExecOp(op uint16) error {
 		}
 
 		break
-	case 0x1000: // Jump address
+	case 0x1000: // 1nnn - Jump address
 		vm.PC = op & 0x0FFF
 		break
-	case 0x2000: // Call addr
+	case 0x2000: // 2nnn - Call addr
 		vm.SP++
 		vm.Stack[vm.SP] = vm.PC
 		vm.PC = op & 0x0FFF
 		break
-	case 0x3000: // SE Vx - Skip next instruction if Vx = kk.
+	case 0x3000: // 3xkk - SE Vx - Skip next instruction if Vx = kk.
 		x := op & 0x0F00 >> 8
 		kk := uint8(op & 0x00FF)
 
@@ -96,7 +96,7 @@ func (vm *VM) ExecOp(op uint16) error {
 		}
 
 		break
-	case 0x4000: // SNE Vx - Skip next instruction if Vx != kk.
+	case 0x4000: // 4xkk - SNE Vx, byte - Skip next instruction if Vx != kk.
 		x := op & 0x0F00 >> 8
 		kk := uint8(op & 0x00FF)
 
@@ -123,11 +123,18 @@ func (vm *VM) ExecOp(op uint16) error {
 			return &UnknownOpCode{OpCode: op}
 		}
 		break
-	case 0x6000: // LD Vx, byte
+	case 0x6000: // 6xkk - LD Vx, byte
 		x := op & 0xF00 >> 8
 		kk := uint8(op & 0x00FF)
 
 		vm.V[x] = kk
+
+		vm.PC += 2
+		break
+	case 0x7000: // 7xkk - ADD Vx, byte
+		x := op & 0xF00 >> 8
+		kk := uint8(op & 0x00FF)
+		vm.V[x] += kk
 
 		vm.PC += 2
 		break

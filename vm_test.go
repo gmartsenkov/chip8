@@ -159,3 +159,17 @@ func TestExecOpLDVx(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x202))
 	assert.Equal(t, vm.V[2], uint8(0x35))
 }
+
+// ADD Vx, byte
+func TestExecOpAddVx(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x10
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x10))
+
+	err := vm.ExecOp(0x7210)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x20))
+}
