@@ -173,3 +173,106 @@ func TestExecOpAddVx(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x202))
 	assert.Equal(t, vm.V[2], uint8(0x20))
 }
+
+// LD Vx, Vy
+func TestExecOpLDVxVy(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x05
+	vm.V[3] = 0x10
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x05))
+	assert.Equal(t, vm.V[3], uint8(0x10))
+
+	err := vm.ExecOp(0x8230)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x10))
+	assert.Equal(t, vm.V[3], uint8(0x10))
+}
+
+// OR Vx, Vy
+func TestExecOpORVxVy(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x10
+	vm.V[3] = 0x01
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x10))
+	assert.Equal(t, vm.V[3], uint8(0x01))
+
+	err := vm.ExecOp(0x8231)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x11))
+	assert.Equal(t, vm.V[3], uint8(0x01))
+}
+
+// AND Vx, Vy
+func TestExecOpANDVxVy(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x15
+	vm.V[3] = 0x05
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x15))
+	assert.Equal(t, vm.V[3], uint8(0x05))
+
+	err := vm.ExecOp(0x8232)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x05))
+	assert.Equal(t, vm.V[3], uint8(0x05))
+}
+
+// XOR Vx, Vy
+func TestExecOpXORVxVy(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x15
+	vm.V[3] = 0x05
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x15))
+	assert.Equal(t, vm.V[3], uint8(0x05))
+
+	err := vm.ExecOp(0x8233)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x10))
+	assert.Equal(t, vm.V[3], uint8(0x05))
+}
+
+// ADD Vx, Vy
+func TestExecOpAddVxVy(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x15
+	vm.V[3] = 0x05
+	vm.V[4] = 0xFF
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x15))
+	assert.Equal(t, vm.V[3], uint8(0x05))
+	assert.Equal(t, vm.V[4], uint8(0xFF))
+	assert.Equal(t, vm.V[0xF], uint8(0))
+
+	err := vm.ExecOp(0x8234)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x1A))
+	assert.Equal(t, vm.V[3], uint8(0x05))
+	assert.Equal(t, vm.V[4], uint8(0xFF))
+
+	err = vm.ExecOp(0x8244)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x204))
+	assert.Equal(t, vm.V[2], uint8(0x19))
+	assert.Equal(t, vm.V[3], uint8(0x05))
+	assert.Equal(t, vm.V[4], uint8(0xFF))
+	assert.Equal(t, vm.V[0xF], uint8(1))
+}
