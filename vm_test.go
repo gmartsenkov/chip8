@@ -6,6 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func init() {
+	randByte = func() byte {
+		return 0x01
+	}
+}
+
 func TestInitVM(t *testing.T) {
 	vm := InitVM()
 
@@ -457,4 +463,19 @@ func TestExecOpJPV0(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, vm.PC, uint16(0x124))
+}
+
+// RND Vx, byte
+func TestExecOpRNDVx(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x15
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x15))
+
+	err := vm.ExecOp(0xC223)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x24))
 }

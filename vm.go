@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"time"
+	"math/rand"
 )
 
 type UnknownOpCode struct {
@@ -260,6 +262,13 @@ func (vm *VM) ExecOp(op uint16) error {
 	case 0xB000: // Bnnn - JP v0, addr
 		vm.PC = (op & 0x0FFF) + uint16(vm.V[0])
 		break
+	case 0xC000: // Cxkk - RND Vx, byte
+		x := op & 0x0F00 >> 8
+		kk := byte(op)
+
+		vm.V[x] = kk + randByte()
+		vm.PC += 2
+		break
 	}
 	return nil
 }
@@ -268,4 +277,9 @@ func (vm *VM) LoadProgram(program []byte) {
 	for i, v := range program {
 		vm.Memory[i+512] = v
 	}
+}
+
+// randByte returns a random value between 0 and 255.
+var randByte = func() byte {
+	return byte(rand.New(rand.NewSource(time.Now().UnixNano())).Intn(255))
 }
