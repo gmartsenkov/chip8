@@ -143,23 +143,23 @@ func (vm *VM) ExecOp(op uint16) error {
 		y := op & 0x00F0 >> 4
 
 		switch op & 0x000F {
-		case 0000: // 8xy0 - LD Vx, Vy
+		case 0x0000: // 8xy0 - LD Vx, Vy
 			vm.V[x] = vm.V[y]
 			vm.PC += 2
 			break
-		case 0001: // 8xy1 - OR Vx, Vy
+		case 0x0001: // 8xy1 - OR Vx, Vy
 			vm.V[x] = vm.V[x] | vm.V[y]
 			vm.PC += 2
 			break
-		case 0002: // 8xy2 - AND Vx, Vy
+		case 0x0002: // 8xy2 - AND Vx, Vy
 			vm.V[x] = vm.V[x] & vm.V[y]
 			vm.PC += 2
 			break
-		case 0003: // 8xy3 - XOR Vx, Vy
+		case 0x0003: // 8xy3 - XOR Vx, Vy
 			vm.V[x] = vm.V[x] ^ vm.V[y]
 			vm.PC += 2
 			break
-		case 0004: // 8xy4 - ADD Vx, Vy
+		case 0x0004: // 8xy4 - ADD Vx, Vy
 			sum := uint16(vm.V[x]) + uint16(vm.V[y])
 
 			var carryFlag byte
@@ -173,7 +173,7 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.PC += 2
 
 			break
-		case 0005: // 8xy5 - SUB Vx, Vy
+		case 0x0005: // 8xy5 - SUB Vx, Vy
 			sum := uint16(vm.V[x]) - uint16(vm.V[y])
 
 			var carryFlag byte
@@ -189,7 +189,7 @@ func (vm *VM) ExecOp(op uint16) error {
 
 			break
 
-		case 0006: // 8xy6 - SHR Vx {, Vy}
+		case 0x0006: // 8xy6 - SHR Vx {, Vy}
 			var carryFlag byte
 
 			if (vm.V[x] & 0x01) == 0x01 {
@@ -203,7 +203,7 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.PC += 2
 
 			break
-		case 0007: // 8xy7 SUBN Vx, Vy
+		case 0x0007: // 8xy7 SUBN Vx, Vy
 			sum := uint16(vm.V[y]) - uint16(vm.V[x])
 
 			var carryFlag byte
@@ -215,6 +215,21 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.V[0xF] = carryFlag
 
 			vm.V[x] = uint8(sum)
+			vm.PC += 2
+
+			break
+
+		case 0x000E: // 8xyE - SHL Vx {, Vy}
+			var carryFlag byte
+
+			if (vm.V[x] & 0x80) == 0x80 {
+				carryFlag = 1
+			}
+
+			vm.V[0xF] = carryFlag
+
+			vm.V[x] *= 2
+
 			vm.PC += 2
 
 			break
