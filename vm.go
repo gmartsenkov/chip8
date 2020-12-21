@@ -203,6 +203,21 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.PC += 2
 
 			break
+		case 0007: // 8xy7 SUBN Vx, Vy
+			sum := uint16(vm.V[y]) - uint16(vm.V[x])
+
+			var carryFlag byte
+
+			if vm.V[y] > vm.V[x] {
+				carryFlag = 1
+			}
+
+			vm.V[0xF] = carryFlag
+
+			vm.V[x] = uint8(sum)
+			vm.PC += 2
+
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}

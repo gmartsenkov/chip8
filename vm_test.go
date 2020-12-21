@@ -336,3 +336,35 @@ func TestExecOpSHRVxVy(t *testing.T) {
 	assert.Equal(t, vm.V[4], uint8(0x00))
 	assert.Equal(t, vm.V[0xF], uint8(0))
 }
+
+// SUBN Vx, Vy
+func TestExecOpSUBNVxVy(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x05
+	vm.V[3] = 0x08
+	vm.V[4] = 0x2
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x05))
+	assert.Equal(t, vm.V[3], uint8(0x08))
+	assert.Equal(t, vm.V[4], uint8(0x2))
+	assert.Equal(t, vm.V[0xF], uint8(0))
+
+	err := vm.ExecOp(0x8237)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x3))
+	assert.Equal(t, vm.V[3], uint8(0x08))
+	assert.Equal(t, vm.V[4], uint8(0x2))
+	assert.Equal(t, vm.V[0xF], uint8(1))
+
+	err = vm.ExecOp(0x8247)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x204))
+	assert.Equal(t, vm.V[2], uint8(0xff))
+	assert.Equal(t, vm.V[3], uint8(0x08))
+	assert.Equal(t, vm.V[4], uint8(0x2))
+	assert.Equal(t, vm.V[0xF], uint8(0))
+}
