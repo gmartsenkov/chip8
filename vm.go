@@ -253,6 +253,10 @@ func (vm *VM) ExecOp(op uint16) error {
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}
+	case 0xA000: // Annn - LD I, addr
+		vm.I = op & 0x0FFF
+		vm.PC += 2
+		break
 	}
 	return nil
 }

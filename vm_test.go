@@ -432,3 +432,17 @@ func TestExecOpSNEVxVy(t *testing.T) {
 	err = vm.ExecOp(0x9241)
 	assert.Equal(t, err, &UnknownOpCode{OpCode: 0x9241})
 }
+
+// LD I, addr
+func TestExecOpLDI(t *testing.T) {
+	vm := InitVM()
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.I, uint16(0x0))
+
+	err := vm.ExecOp(0xA234)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.I, uint16(0x234))
+}
