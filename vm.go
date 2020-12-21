@@ -189,6 +189,20 @@ func (vm *VM) ExecOp(op uint16) error {
 
 			break
 
+		case 0006: // 8xy6 - SHR Vx {, Vy}
+			var carryFlag byte
+
+			if (vm.V[x] & 0x01) == 0x01 {
+				carryFlag = 1
+			}
+
+			vm.V[0xF] = carryFlag
+
+			vm.V[x] /= 2
+
+			vm.PC += 2
+
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}
