@@ -446,3 +446,15 @@ func TestExecOpLDI(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x202))
 	assert.Equal(t, vm.I, uint16(0x234))
 }
+
+// JP v0, addr
+func TestExecOpJPV0(t *testing.T) {
+	vm := InitVM()
+	vm.V[0] = 0x01
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0xB123)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x124))
+}

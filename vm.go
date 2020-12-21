@@ -257,6 +257,9 @@ func (vm *VM) ExecOp(op uint16) error {
 		vm.I = op & 0x0FFF
 		vm.PC += 2
 		break
+	case 0xB000: // Bnnn - JP v0, addr
+		vm.PC = (op & 0x0FFF) + uint16(vm.V[0])
+		break
 	}
 	return nil
 }
