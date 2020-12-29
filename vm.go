@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+const (
+	clockSpeed = time.Duration(60)
+)
+
 type UnknownOpCode struct {
 	OpCode uint16
 }
@@ -48,11 +52,19 @@ type VM struct {
 	PC uint16 // Program counter
 	SP uint8  // Stack pointer
 	I  uint16 // Index register
+
+	Screen *Screen
+
+	Clock <-chan time.Time // Timer
+
+	DT uint8 // Delay Timer
+	ST uint8 // Sound Timer
 }
 
 func InitVM() VM {
 	instance := VM{
 		PC: 0x200,
+		Clock: time.Tick(time.Second / clockSpeed),
 	}
 
 	for i, v := range Fonts {

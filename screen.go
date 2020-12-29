@@ -12,6 +12,7 @@ const (
 	height = 32
 )
 
+// Contains the pixels on screen and implements screen render related functions
 type Screen struct {
 	Pixels [width * height]byte
 }
