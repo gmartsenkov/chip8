@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"time"
 	"math/rand"
+	"time"
 )
 
 type UnknownOpCode struct {
