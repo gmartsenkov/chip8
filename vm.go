@@ -78,6 +78,24 @@ func (vm *VM) SetScreen(screen *Screen) {
 	vm.Screen = screen
 }
 
+func (vm *VM) Step() error {
+	op := vm.decodeOpCode()
+
+	err := vm.ExecOp(op)
+	if err != nil {
+		return err
+	}
+
+	if vm.DT > 0 {
+		vm.DT -= 1
+	}
+	if vm.ST > 0 {
+		vm.ST -= 1
+	}
+
+	return nil
+}
+
 func (vm *VM) ExecOp(op uint16) error {
 	switch op & 0xF000 {
 	case 0x0000: // SYS addr

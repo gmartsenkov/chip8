@@ -41,10 +41,54 @@ func TestDecodeOpCode(t *testing.T) {
 	assert.Equal(t, vm.decodeOpCode(), uint16(0x1020))
 }
 
+func TestStep(t *testing.T) {
+	vm := InitVM()
+	vm.DT = 5
+	vm.ST = 15
+	program := []byte{0x00, 0xE0, 0x00, 0x00, 0x00, 0xE0}
+	screen := Screen{Pixels: [2048]byte{1, 2}}
+
+	vm.LoadProgram(program)
+	vm.SetScreen(&screen)
+
+	assert.Equal(t, screen.Pixels[0], uint8(1))
+	assert.Equal(t, screen.Pixels[1], uint8(2))
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.DT, uint8(5))
+	assert.Equal(t, vm.ST, uint8(15))
+
+	err := vm.Step()
+	assert.Nil(t, err)
+
+	assert.Equal(t, screen.Pixels[0], uint8(0))
+	assert.Equal(t, screen.Pixels[1], uint8(0))
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.DT, uint8(4))
+	assert.Equal(t, vm.ST, uint8(14))
+
+	err = vm.Step()
+	assert.Equal(t, err, &UnknownOpCode{OpCode: 0x0})
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.DT, uint8(4))
+	assert.Equal(t, vm.ST, uint8(14))
+
+	vm.DT = 0
+	vm.ST = 0
+	vm.PC = 0x204
+
+	err = vm.Step()
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x206))
+	assert.Equal(t, vm.DT, uint8(0))
+	assert.Equal(t, vm.ST, uint8(0))
+}
+
 // CLS
 func TestExecOpCLS(t *testing.T) {
 	vm := InitVM()
-	screen := Screen{Pixels: [2048]byte{1,2}}
+	screen := Screen{Pixels: [2048]byte{1, 2}}
 	vm.SetScreen(&screen)
 
 	assert.Equal(t, screen.Pixels[0], uint8(1))
@@ -363,6 +407,7 @@ func TestExecOpSHRVxVy(t *testing.T) {
 
 // SUBN Vx, Vy
 func TestExecOpSUBNVxVy(t *testing.T) {
+
 	vm := InitVM()
 	vm.V[2] = 0x05
 	vm.V[3] = 0x08
@@ -392,7 +437,6 @@ func TestExecOpSUBNVxVy(t *testing.T) {
 	assert.Equal(t, vm.V[4], uint8(0x2))
 	assert.Equal(t, vm.V[0xF], uint8(0))
 }
-
 
 // SHL Vx, {, Vy}
 func TestExecOpSHLVxVy(t *testing.T) {
