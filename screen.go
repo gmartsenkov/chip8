@@ -36,11 +36,37 @@ func (screen *Screen) Clear() {
 	}
 }
 
+func (screen *Screen) WriteSprite(sprite []byte, x, y byte) bool {
+	collision := false
+	spriteHeight := len(sprite)
+
+	// fmt.Printf("Sprite: %b, X: %d, Y: %d\n", sprite, x, y)
+	for yline := 0; yline < spriteHeight; yline++ {
+		pixel := sprite[yline]
+		// fmt.Printf("Pixel: %x\n", pixel)
+
+		for xline := 0; xline < 8; xline++ {
+			if (pixel & (0x80 >> xline)) != 0 {
+				position := (((int(x) + xline) % width) + ((int(y) + yline) * width))
+
+				fmt.Printf("Pos x: %d, Pos y: %d, Real: %d\n", int(x)+xline, int(y)+yline, position)
+				if screen.Pixels[position] == 0x01 {
+					collision = true
+				}
+
+				screen.Pixels[position] ^= 1
+			}
+		}
+	}
+
+	return collision
+}
+
 func (screen *Screen) Render() {
 	for row := 0; row < height; row++ {
 		for pixel := 0; pixel < width; pixel++ {
 			v := ' '
-			coord := row * width + pixel
+			coord := row*width + pixel
 
 			if screen.Pixels[coord] == 0x01 {
 				v = '█'

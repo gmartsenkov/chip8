@@ -541,3 +541,81 @@ func TestExecOpRNDVx(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x202))
 	assert.Equal(t, vm.V[2], uint8(0x24))
 }
+
+// DRW Vx, Vy, nibble
+func TestExecOpDRW(t *testing.T) {
+	vm := InitVM()
+	screen := Screen{}
+	vm.SetScreen(&screen)
+
+	err := vm.ExecOp(0xD005)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.I, uint16(0))
+	assert.Equal(t, vm.V[0xF], uint8(0))
+	assert.Equal(t, screen.Pixels[0:4], []byte{1, 1, 1, 1})     // ****
+	assert.Equal(t, screen.Pixels[64:68], []byte{1, 0, 0, 1})   // *  *
+	assert.Equal(t, screen.Pixels[128:132], []byte{1, 0, 0, 1}) // *  *
+	assert.Equal(t, screen.Pixels[192:196], []byte{1, 0, 0, 1}) // *  *
+	assert.Equal(t, screen.Pixels[256:260], []byte{1, 1, 1, 1}) // ****
+
+	vm.I = 5
+	vm.V[0x1] = 1
+	vm.V[0x2] = 5
+
+	err = vm.ExecOp(0xD125)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x204))
+	assert.Equal(t, vm.I, uint16(5))
+	assert.Equal(t, vm.V[0xF], uint8(0))
+
+	assert.Equal(t, screen.Pixels[0:4], []byte{1, 1, 1, 1})     // ****
+	assert.Equal(t, screen.Pixels[64:68], []byte{1, 0, 0, 1})   // *  *
+	assert.Equal(t, screen.Pixels[128:132], []byte{1, 0, 0, 1}) // *  *
+	assert.Equal(t, screen.Pixels[192:196], []byte{1, 0, 0, 1}) // *  *
+	assert.Equal(t, screen.Pixels[256:260], []byte{1, 1, 1, 1}) // ****
+
+	assert.Equal(t, screen.Pixels[321:325], []byte{0, 0, 1, 0}) //   *
+	assert.Equal(t, screen.Pixels[385:389], []byte{0, 1, 1, 0}) //  **
+	assert.Equal(t, screen.Pixels[449:453], []byte{0, 0, 1, 0}) //   *
+	assert.Equal(t, screen.Pixels[513:517], []byte{0, 0, 1, 0}) //   *
+	assert.Equal(t, screen.Pixels[577:581], []byte{0, 1, 1, 1}) //  ***
+
+	err = vm.ExecOp(0xD005)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x206))
+	assert.Equal(t, vm.I, uint16(5))
+	assert.Equal(t, vm.V[0xF], uint8(1))
+
+	assert.Equal(t, screen.Pixels[0:4], []byte{1, 1, 0, 1})     // ** *
+	assert.Equal(t, screen.Pixels[64:68], []byte{1, 1, 1, 1})   // ****
+	assert.Equal(t, screen.Pixels[128:132], []byte{1, 0, 1, 1}) // * **
+	assert.Equal(t, screen.Pixels[192:196], []byte{1, 0, 1, 1}) // * **
+	assert.Equal(t, screen.Pixels[256:260], []byte{1, 0, 0, 0}) // *
+
+	vm.I = 0
+	vm.V[0x1] = 62
+	vm.V[0x2] = 10
+
+	err = vm.ExecOp(0xD125)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x208))
+	assert.Equal(t, vm.I, uint16(0))
+	assert.Equal(t, vm.V[0xF], uint8(0))
+
+	assert.Equal(t, screen.Pixels[702:704], []byte{1, 1})     // **
+	assert.Equal(t, screen.Pixels[766:768], []byte{1, 0})     // *
+	assert.Equal(t, screen.Pixels[830:832], []byte{1, 0})     // *
+	assert.Equal(t, screen.Pixels[894:896], []byte{1, 0})     // *
+	assert.Equal(t, screen.Pixels[958:960], []byte{1, 1})     // **
+
+	assert.Equal(t, screen.Pixels[640:642], []byte{1, 1})     // **
+	assert.Equal(t, screen.Pixels[704:706], []byte{0, 1})     //  *
+	assert.Equal(t, screen.Pixels[768:770], []byte{0, 1})     //  *
+	assert.Equal(t, screen.Pixels[832:834], []byte{0, 1})     //  *
+	assert.Equal(t, screen.Pixels[896:898], []byte{1, 1})     // **
+}

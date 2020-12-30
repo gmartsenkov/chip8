@@ -305,6 +305,21 @@ func (vm *VM) ExecOp(op uint16) error {
 		vm.V[x] = kk + randByte()
 		vm.PC += 2
 		break
+	case 0xD000: // DRW Vx, Vy, nibble
+		x := vm.V[op & 0x0F00 >> 8]
+		y := vm.V[op & 0x00F0 >> 4]
+		nibble := op & 0x000F
+
+		collision := vm.Screen.WriteSprite(vm.Memory[vm.I:vm.I + nibble], x, y)
+
+		if collision {
+			vm.V[0xF] = 1
+		} else {
+			vm.V[0xF] = 0
+		}
+
+		vm.PC += 2
+		break
 	}
 	return nil
 }
