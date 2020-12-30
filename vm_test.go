@@ -6,9 +6,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// Mock functions
 func init() {
 	randByte = func() byte {
 		return 0x01
+	}
+
+	fetchKey = func() byte {
+		return 0x05
 	}
 }
 
@@ -607,17 +612,17 @@ func TestExecOpDRW(t *testing.T) {
 	assert.Equal(t, vm.I, uint16(0))
 	assert.Equal(t, vm.V[0xF], uint8(0))
 
-	assert.Equal(t, screen.Pixels[702:704], []byte{1, 1})     // **
-	assert.Equal(t, screen.Pixels[766:768], []byte{1, 0})     // *
-	assert.Equal(t, screen.Pixels[830:832], []byte{1, 0})     // *
-	assert.Equal(t, screen.Pixels[894:896], []byte{1, 0})     // *
-	assert.Equal(t, screen.Pixels[958:960], []byte{1, 1})     // **
+	assert.Equal(t, screen.Pixels[702:704], []byte{1, 1}) // **
+	assert.Equal(t, screen.Pixels[766:768], []byte{1, 0}) // *
+	assert.Equal(t, screen.Pixels[830:832], []byte{1, 0}) // *
+	assert.Equal(t, screen.Pixels[894:896], []byte{1, 0}) // *
+	assert.Equal(t, screen.Pixels[958:960], []byte{1, 1}) // **
 
-	assert.Equal(t, screen.Pixels[640:642], []byte{1, 1})     // **
-	assert.Equal(t, screen.Pixels[704:706], []byte{0, 1})     //  *
-	assert.Equal(t, screen.Pixels[768:770], []byte{0, 1})     //  *
-	assert.Equal(t, screen.Pixels[832:834], []byte{0, 1})     //  *
-	assert.Equal(t, screen.Pixels[896:898], []byte{1, 1})     // **
+	assert.Equal(t, screen.Pixels[640:642], []byte{1, 1}) // **
+	assert.Equal(t, screen.Pixels[704:706], []byte{0, 1}) //  *
+	assert.Equal(t, screen.Pixels[768:770], []byte{0, 1}) //  *
+	assert.Equal(t, screen.Pixels[832:834], []byte{0, 1}) //  *
+	assert.Equal(t, screen.Pixels[896:898], []byte{1, 1}) // **
 }
 
 // Ex9E - SKP Vx
@@ -666,13 +671,7 @@ func TestExecOpInvalidE000(t *testing.T) {
 	assert.Equal(t, err, &UnknownOpCode{OpCode: 0xE200})
 }
 
-func TestExecOpInvalidF000(t *testing.T) {
-	vm := InitVM()
-
-	err := vm.ExecOp(0xF200)
-	assert.Equal(t, err, &UnknownOpCode{OpCode: 0xF200})
-}
-
+// Fx07 - LD Vx, DT
 func TestExecOpLDVxDT(t *testing.T) {
 	vm := InitVM()
 	vm.DT = 0x2
@@ -687,4 +686,18 @@ func TestExecOpLDVxDT(t *testing.T) {
 	assert.Equal(t, vm.PC, uint16(0x202))
 	assert.Equal(t, vm.DT, uint8(0x2))
 	assert.Equal(t, vm.V[2], uint8(0x2))
+}
+
+// Fx0A - LD Vx, K
+func TestExecOpLDVxK(t *testing.T) {
+	vm := InitVM()
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.V[2], uint8(0x0))
+
+	err := vm.ExecOp(0xF20A)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.V[2], uint8(0x5))
 }

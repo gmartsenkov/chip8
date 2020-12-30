@@ -20,5 +20,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ReadROM(rom, int(romInfo.Size()))
+	program := ReadROM(rom, int(romInfo.Size()))
+
+	screen := Screen{}
+	screen.Init()
+	defer screen.Close()
+
+	vm := InitVM()
+
+	vm.SetScreen(&screen)
+	vm.LoadProgram(program)
 }
