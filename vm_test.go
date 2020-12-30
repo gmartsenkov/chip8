@@ -665,3 +665,26 @@ func TestExecOpInvalidE000(t *testing.T) {
 	err := vm.ExecOp(0xE200)
 	assert.Equal(t, err, &UnknownOpCode{OpCode: 0xE200})
 }
+
+func TestExecOpInvalidF000(t *testing.T) {
+	vm := InitVM()
+
+	err := vm.ExecOp(0xF200)
+	assert.Equal(t, err, &UnknownOpCode{OpCode: 0xF200})
+}
+
+func TestExecOpLDVxDT(t *testing.T) {
+	vm := InitVM()
+	vm.DT = 0x2
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.DT, uint8(0x2))
+	assert.Equal(t, vm.V[2], uint8(0x0))
+
+	err := vm.ExecOp(0xF207)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.DT, uint8(0x2))
+	assert.Equal(t, vm.V[2], uint8(0x2))
+}

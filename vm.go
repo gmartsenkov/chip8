@@ -344,6 +344,19 @@ func (vm *VM) ExecOp(op uint16) error {
 		}
 
 		break
+	case 0xF000:
+		x := op & 0x0F00 >> 8
+
+		switch op & 0x00FF {
+		case 0x0007: // LD Vx, DT
+			vm.V[x] = vm.DT
+			vm.PC += 2
+			break
+		default:
+			return &UnknownOpCode{OpCode: op}
+		}
+
+		break
 	}
 	return nil
 }
