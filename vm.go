@@ -356,6 +356,10 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.V[x] = fetchKey()
 			vm.PC += 2
 			break
+		case 0x0015: // LD DT, Vx
+			vm.DT = vm.V[x]
+			vm.PC += 2
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}
