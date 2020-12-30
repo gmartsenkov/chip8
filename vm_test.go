@@ -718,3 +718,20 @@ func TestExecOpLDDTVx(t *testing.T) {
 	assert.Equal(t, vm.DT, uint8(0x20))
 	assert.Equal(t, vm.V[2], uint8(0x20))
 }
+
+//Fx15 - LD ST, Vx
+func TestExecOpLDSTVx(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x20
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.ST, uint8(0x0))
+	assert.Equal(t, vm.V[2], uint8(0x20))
+
+	err := vm.ExecOp(0xF218)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.ST, uint8(0x20))
+	assert.Equal(t, vm.V[2], uint8(0x20))
+}

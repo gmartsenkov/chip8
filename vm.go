@@ -360,6 +360,10 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.DT = vm.V[x]
 			vm.PC += 2
 			break
+		case 0x0018: // LD ST, Vx
+			vm.ST = vm.V[x]
+			vm.PC += 2
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}
