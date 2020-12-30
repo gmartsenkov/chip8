@@ -619,3 +619,49 @@ func TestExecOpDRW(t *testing.T) {
 	assert.Equal(t, screen.Pixels[832:834], []byte{0, 1})     //  *
 	assert.Equal(t, screen.Pixels[896:898], []byte{1, 1})     // **
 }
+
+// Ex9E - SKP Vx
+func TestExecOpSKP(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x2
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0xE29E)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+
+	vm.Keypad.PressKey(0x2)
+	err = vm.ExecOp(0xE29E)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x206))
+}
+
+// ExA1 - SKPN Vx
+func TestExecOpSKPN(t *testing.T) {
+	vm := InitVM()
+	vm.V[2] = 0x2
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+
+	err := vm.ExecOp(0xE2A1)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x204))
+
+	vm.Keypad.PressKey(0x2)
+
+	err = vm.ExecOp(0xE2A1)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x206))
+}
+
+func TestExecOpInvalidE000(t *testing.T) {
+	vm := InitVM()
+
+	err := vm.ExecOp(0xE200)
+	assert.Equal(t, err, &UnknownOpCode{OpCode: 0xE200})
+}

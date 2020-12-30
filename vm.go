@@ -54,6 +54,7 @@ type VM struct {
 	I  uint16 // Index register
 
 	Screen *Screen
+	Keypad Keypad
 
 	Clock <-chan time.Time // Timer
 
@@ -319,6 +320,29 @@ func (vm *VM) ExecOp(op uint16) error {
 		}
 
 		vm.PC += 2
+		break
+	case 0xE000:
+		x := vm.V[op & 0x0F00 >> 8]
+
+		switch op & 0x00FF {
+		case 0x009E: // Ex9E - SKP Vx
+			if vm.Keypad.CheckPressed(x) {
+				vm.PC += 2
+			}
+
+			vm.PC += 2
+			break
+		case 0x00A1: // ExA1 - SKPN Vx
+			if !vm.Keypad.CheckPressed(x) {
+				vm.PC += 2
+			}
+
+			vm.PC += 2
+			break
+		default:
+			return &UnknownOpCode{OpCode: op}
+		}
+
 		break
 	}
 	return nil
