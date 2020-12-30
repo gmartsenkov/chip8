@@ -30,12 +30,19 @@ func (screen *Screen) Close() {
 	termbox.Close()
 }
 
+func (screen *Screen) Clear() {
+	for i := range screen.Pixels {
+		screen.Pixels[i] = 0
+	}
+}
+
 func (screen *Screen) Render() {
 	for row := 0; row < height; row++ {
 		for pixel := 0; pixel < width; pixel++ {
 			v := ' '
+			coord := row * width + pixel
 
-			if v == 0x01 {
+			if screen.Pixels[coord] == 0x01 {
 				v = '█'
 			}
 			termbox.SetCell(row, pixel, v, termbox.ColorGreen, termbox.ColorBlack)

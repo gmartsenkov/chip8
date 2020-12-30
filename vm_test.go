@@ -30,14 +30,32 @@ func TestLoadProgram(t *testing.T) {
 	assert.Equal(t, vm.Memory[512:519], []byte("program"))
 }
 
+func TestDecodeOpCode(t *testing.T) {
+	vm := InitVM()
+	program := []byte{0x10, 0x20}
+
+	assert.Equal(t, vm.Memory[512:514], []byte{0, 0})
+	vm.LoadProgram(program)
+	assert.Equal(t, vm.Memory[512:514], []byte{0x10, 0x20})
+
+	assert.Equal(t, vm.decodeOpCode(), uint16(0x1020))
+}
+
 // CLS
 func TestExecOpCLS(t *testing.T) {
 	vm := InitVM()
+	screen := Screen{Pixels: [2048]byte{1,2}}
+	vm.SetScreen(&screen)
+
+	assert.Equal(t, screen.Pixels[0], uint8(1))
+	assert.Equal(t, screen.Pixels[1], uint8(2))
 	assert.Equal(t, vm.PC, uint16(0x200))
 
 	err := vm.ExecOp(0x00E0)
 	assert.Nil(t, err)
 
+	assert.Equal(t, screen.Pixels[0], uint8(0))
+	assert.Equal(t, screen.Pixels[1], uint8(0))
 	assert.Equal(t, vm.PC, uint16(0x202))
 }
 

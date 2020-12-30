@@ -74,11 +74,17 @@ func InitVM() VM {
 	return instance
 }
 
+func (vm *VM) SetScreen(screen *Screen) {
+	vm.Screen = screen
+}
+
 func (vm *VM) ExecOp(op uint16) error {
 	switch op & 0xF000 {
 	case 0x0000: // SYS addr
 		switch op {
 		case 0x00E0: // CLS
+			vm.Screen.Clear()
+
 			vm.PC += 2
 			break
 		case 0x00EE: // RET
@@ -283,6 +289,10 @@ func (vm *VM) ExecOp(op uint16) error {
 		break
 	}
 	return nil
+}
+
+func (vm *VM) decodeOpCode() uint16 {
+	return uint16(vm.Memory[vm.PC]) << 8 | uint16(vm.Memory[vm.PC + 1])
 }
 
 func (vm *VM) LoadProgram(program []byte) {
