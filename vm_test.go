@@ -736,7 +736,7 @@ func TestExecOpLDSTVx(t *testing.T) {
 	assert.Equal(t, vm.V[2], uint8(0x20))
 }
 
-//Fx1E - ADD I, Vx
+// Fx1E - ADD I, Vx
 func TestExecOpADDIVx(t *testing.T) {
 	vm := InitVM()
 	vm.I = 0x30
@@ -751,5 +751,23 @@ func TestExecOpADDIVx(t *testing.T) {
 
 	assert.Equal(t, vm.PC, uint16(0x202))
 	assert.Equal(t, vm.I, uint16(0x50))
+	assert.Equal(t, vm.V[2], uint8(0x20))
+}
+
+// Fx29 - LD F, Vx
+func TestExecOpLDFVx(t *testing.T) {
+	vm := InitVM()
+	vm.I = 0x30
+	vm.V[2] = 0x20
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.I, uint16(0x30))
+	assert.Equal(t, vm.V[2], uint8(0x20))
+
+	err := vm.ExecOp(0xF229)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.I, uint16(0xa0))
 	assert.Equal(t, vm.V[2], uint8(0x20))
 }

@@ -368,6 +368,10 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.I += uint16(vm.V[x])
 			vm.PC += 2
 			break
+		case 0x0029: // LD F, Vx
+			vm.I = uint16(vm.V[x]) * 5
+			vm.PC += 2
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}
