@@ -1,12 +1,22 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"os"
 )
 
 func main() {
-	rom, err := os.Open("./roms/breakout.ch8")
+	path := flag.String("rom", "", "Path to the chip8 rom")
+	flag.Parse()
+
+	if *path == "" {
+		fmt.Println("Provide path to rom.\nExample: chip8 --rom ./breakout.ch8")
+		os.Exit(1)
+	}
+
+	rom, err := os.Open(*path)
 
 	if err != nil {
 		log.Fatal(err)
