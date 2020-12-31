@@ -64,7 +64,7 @@ type VM struct {
 
 func InitVM() VM {
 	instance := VM{
-		PC: 0x200,
+		PC:    0x200,
 		Clock: time.Tick(time.Second / clockSpeed),
 	}
 
@@ -307,11 +307,11 @@ func (vm *VM) ExecOp(op uint16) error {
 		vm.PC += 2
 		break
 	case 0xD000: // DRW Vx, Vy, nibble
-		x := vm.V[op & 0x0F00 >> 8]
-		y := vm.V[op & 0x00F0 >> 4]
+		x := vm.V[op&0x0F00>>8]
+		y := vm.V[op&0x00F0>>4]
 		nibble := op & 0x000F
 
-		collision := vm.Screen.WriteSprite(vm.Memory[vm.I:vm.I + nibble], x, y)
+		collision := vm.Screen.WriteSprite(vm.Memory[vm.I:vm.I+nibble], x, y)
 
 		if collision {
 			vm.V[0xF] = 1
@@ -322,7 +322,7 @@ func (vm *VM) ExecOp(op uint16) error {
 		vm.PC += 2
 		break
 	case 0xE000:
-		x := vm.V[op & 0x0F00 >> 8]
+		x := vm.V[op&0x0F00>>8]
 
 		switch op & 0x00FF {
 		case 0x009E: // Ex9E - SKP Vx
@@ -372,6 +372,12 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.I = uint16(vm.V[x]) * 5
 			vm.PC += 2
 			break
+		case 0x0033: // LD B, Vx
+			vm.Memory[vm.I] = vm.V[x] / 100
+			vm.Memory[vm.I+1] = (vm.V[x] / 10) % 10
+			vm.Memory[vm.I+2] = (vm.V[x] % 100) % 10
+			vm.PC += 2
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}
@@ -382,7 +388,7 @@ func (vm *VM) ExecOp(op uint16) error {
 }
 
 func (vm *VM) decodeOpCode() uint16 {
-	return uint16(vm.Memory[vm.PC]) << 8 | uint16(vm.Memory[vm.PC + 1])
+	return uint16(vm.Memory[vm.PC])<<8 | uint16(vm.Memory[vm.PC+1])
 }
 
 func (vm *VM) LoadProgram(program []byte) {
