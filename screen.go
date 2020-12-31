@@ -49,7 +49,7 @@ func (screen *Screen) WriteSprite(sprite []byte, x, y byte) bool {
 			if (pixel & (0x80 >> xline)) != 0 {
 				position := (((int(x) + xline) % width) + ((int(y) + yline) * width))
 
-				fmt.Printf("Pos x: %d, Pos y: %d, Real: %d\n", int(x)+xline, int(y)+yline, position)
+				// fmt.Printf("Pos x: %d, Pos y: %d, Real: %d\n", int(x)+xline, int(y)+yline, position)
 				if screen.Pixels[position] == 0x01 {
 					collision = true
 				}
@@ -71,7 +71,7 @@ func (screen *Screen) Render() {
 			if screen.Pixels[coord] == 0x01 {
 				v = '█'
 			}
-			termbox.SetCell(row, pixel, v, termbox.ColorGreen, termbox.ColorBlack)
+			termbox.SetCell(pixel, row, v, termbox.ColorGreen, termbox.ColorBlack)
 		}
 	}
 

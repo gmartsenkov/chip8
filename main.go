@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	rom, err := os.Open("./roms/maze_demo.ch8")
+	rom, err := os.Open("./roms/breakout.ch8")
 
 	if err != nil {
 		log.Fatal(err)
@@ -30,4 +30,19 @@ func main() {
 
 	vm.SetScreen(&screen)
 	vm.LoadProgram(program)
+
+	logFile, err := os.OpenFile("chip8.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		os.Exit(1)
+	}
+
+	vm.Logger.SetOutput(logFile)
+
+	go vm.EventListener()
+
+	err = vm.Start()
+
+	if err != nil {
+		os.Exit(1)
+	}
 }

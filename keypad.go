@@ -21,6 +21,11 @@ var keyMap = map[rune]byte{
 	'z': 0x0A, 'x': 0x00, 'c': 0x0B, 'v': 0x0F,
 }
 
+var pollEvent = func() byte {
+	event := termbox.PollEvent()
+	return keyMap[event.Ch]
+}
+
 var fetchKey = func() byte {
 	for {
 		event := termbox.PollEvent()

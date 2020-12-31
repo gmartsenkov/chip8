@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
 )
 
 const (
-	clockSpeed = time.Duration(60)
+	clockSpeed = time.Duration(1200)
 )
 
 type UnknownOpCode struct {
@@ -55,8 +56,11 @@ type VM struct {
 
 	Screen *Screen
 	Keypad Keypad
+	Logger log.Logger
 
-	Clock <-chan time.Time // Timer
+	Clock  <-chan time.Time // Timer
+	Render chan int         // Render
+	Event  chan byte        // Key press
 
 	DT uint8 // Delay Timer
 	ST uint8 // Sound Timer
@@ -67,6 +71,8 @@ func InitVM() VM {
 		PC:    0x200,
 		Clock: time.Tick(time.Second / clockSpeed),
 	}
+	instance.Render = make(chan int, 5)
+	instance.Event = make(chan byte, 10)
 
 	for i, v := range Fonts {
 		instance.Memory[i] = v
@@ -95,6 +101,30 @@ func (vm *VM) Step() error {
 	}
 
 	return nil
+}
+
+func (vm *VM) Start() error {
+	for {
+		select {
+		case event := <-vm.Event:
+			if event == 0x01 {
+				return nil
+			}
+			vm.Keypad.PressKey(event)
+		case <-vm.Clock:
+			if err := vm.Step(); err != nil {
+				return err
+			}
+		case <-vm.Render:
+			vm.Screen.Render()
+		}
+	}
+}
+
+func (vm *VM) EventListener() {
+	for {
+		vm.Event <- pollEvent()
+	}
 }
 
 func (vm *VM) ExecOp(op uint16) error {
@@ -319,6 +349,8 @@ func (vm *VM) ExecOp(op uint16) error {
 			vm.V[0xF] = 0
 		}
 
+		vm.Render <- 0
+
 		vm.PC += 2
 		break
 	case 0xE000:
@@ -380,14 +412,14 @@ func (vm *VM) ExecOp(op uint16) error {
 			break
 		case 0x0055: // LD [I], Vx
 			for i := 0; uint16(i) <= x; i++ {
-				vm.Memory[vm.I + uint16(i)] = vm.V[i]
+				vm.Memory[vm.I+uint16(i)] = vm.V[i]
 			}
 
 			vm.PC += 2
 			break
 		case 0x0065: // LD Vx, [I]
 			for i := 0; uint16(i) <= x; i++ {
-				vm.V[i] = vm.Memory[vm.I + uint16(i)]
+				vm.V[i] = vm.Memory[vm.I+uint16(i)]
 			}
 
 			vm.PC += 2
