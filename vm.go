@@ -385,6 +385,13 @@ func (vm *VM) ExecOp(op uint16) error {
 
 			vm.PC += 2
 			break
+		case 0x0065: // LD Vx, [I]
+			for i := 0; uint16(i) <= x; i++ {
+				vm.V[i] = vm.Memory[vm.I + uint16(i)]
+			}
+
+			vm.PC += 2
+			break
 		default:
 			return &UnknownOpCode{OpCode: op}
 		}

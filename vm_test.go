@@ -813,3 +813,20 @@ func TestExecOpLDIVx(t *testing.T) {
 	assert.Equal(t, vm.I, uint16(0x0))
 	assert.Equal(t, vm.Memory[:3], []byte{0x10, 0x15, 0x20})
 }
+
+// Fx65 - LD Vx, [I]
+func TestExecOpLDVxI(t *testing.T) {
+	vm := InitVM()
+
+	assert.Equal(t, vm.PC, uint16(0x200))
+	assert.Equal(t, vm.I, uint16(0x0))
+	assert.Equal(t, vm.V, [16]byte{})
+
+	err := vm.ExecOp(0xF365)
+	assert.Nil(t, err)
+
+	assert.Equal(t, vm.PC, uint16(0x202))
+	assert.Equal(t, vm.I, uint16(0x0))
+	assert.Equal(t, vm.V[0:3], vm.Memory[0:3])
+	assert.Equal(t, vm.V[4:], []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
+}
