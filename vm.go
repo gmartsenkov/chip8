@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	clockSpeed = time.Duration(1200)
+	clockSpeed = time.Duration(120)
+	resetKeySpeed = time.Duration(6)
 )
 
 type UnknownOpCode struct {
@@ -58,9 +59,10 @@ type VM struct {
 	Keypad Keypad
 	Logger log.Logger
 
-	Clock  <-chan time.Time // Timer
-	Render chan int         // Render
-	Event  chan byte        // Key press
+	Clock          <-chan time.Time // Timer
+	ResetKeysClock <-chan time.Time // Reset pressed keys timer
+	Render         chan int         // Render
+	Event          chan byte        // Key press
 
 	DT uint8 // Delay Timer
 	ST uint8 // Sound Timer
@@ -70,6 +72,7 @@ func InitVM() VM {
 	instance := VM{
 		PC:    0x200,
 		Clock: time.Tick(time.Second / clockSpeed),
+		ResetKeysClock: time.Tick(time.Second / resetKeySpeed),
 	}
 	instance.Render = make(chan int, 5)
 	instance.Event = make(chan byte, 10)
@@ -111,6 +114,8 @@ func (vm *VM) Start() error {
 				return nil
 			}
 			vm.Keypad.PressKey(event)
+		case <- vm.ResetKeysClock:
+			vm.Keypad.Reset()
 		case <-vm.Clock:
 			if err := vm.Step(); err != nil {
 				return err

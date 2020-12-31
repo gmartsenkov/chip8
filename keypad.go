@@ -6,6 +6,10 @@ type Keypad struct {
 	keys [16]bool
 }
 
+func (keypad *Keypad) Reset() {
+	keypad.keys = [16]bool{}
+}
+
 func (keypad *Keypad) PressKey(key uint8) {
 	keypad.keys[key] = true
 }
