@@ -47,7 +47,7 @@ func (screen *Screen) WriteSprite(sprite []byte, x, y byte) bool {
 
 		for xline := 0; xline < 8; xline++ {
 			if (pixel & (0x80 >> xline)) != 0 {
-				position := (((int(x) + xline) % width) + ((int(y) + yline) * width))
+				position := (((int(x) + xline) % width) + ((int(y) + yline) * width)) % (width * height)
 
 				// fmt.Printf("Pos x: %d, Pos y: %d, Real: %d\n", int(x)+xline, int(y)+yline, position)
 				if screen.Pixels[position] == 0x01 {
