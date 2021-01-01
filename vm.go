@@ -110,7 +110,7 @@ func (vm *VM) Start() error {
 	for {
 		select {
 		case event := <-vm.Event:
-			if event == 0x01 {
+			if event == 0x00 {
 				return nil
 			}
 			vm.Keypad.PressKey(event)
